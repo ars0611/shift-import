@@ -5,19 +5,22 @@
  * @returns spreadsheetId
  */
 export function getSpreadsheetId(sheetUrl: string): string {
-    const sheetUrlObj: URL = new URL(sheetUrl);
-    // [spreadsheets, d, {spreadSheetId}, ...]: string[]
-    const parts: string[] = sheetUrlObj.pathname.split('/');
-    const dIndex: number = parts.indexOf('d');
+    const sheetUrlObj = new URL(sheetUrl);
+    /** @return [spreadsheets, d, {spreadSheetId}, ...]: string[] */
+    const parts = sheetUrlObj.pathname.split('/');
+    const dIndex = parts.indexOf('d');
+
     // dが見つからなかったか末尾だった場合はエラー
     if (dIndex === -1 || dIndex + 1 >= parts.length) {
         throw new Error("spreadsheetIdを取得できませんでした。");
     }
-    const spreadsheetId: string = parts[dIndex + 1];
+
+    const spreadsheetId = parts[dIndex + 1];
     if (!spreadsheetId) {
         throw new Error("spreadsheetIdを取得できませんでした。");
     }
-    return spreadsheetId as string;
+
+    return spreadsheetId;
 }
 
 /**
@@ -27,20 +30,25 @@ export function getSpreadsheetId(sheetUrl: string): string {
  * @returns gid（sheetId）
  */
 export function getGid(sheetUrl: string): number {
-    const sheetUrlObj: URL = new URL(sheetUrl);
+    const sheetUrlObj = new URL(sheetUrl);
+
     // gidはurlのクエリ文字列かhash
-    let gid: number | null = Number(sheetUrlObj.searchParams.get("gid"));
-    if (!gid && sheetUrlObj.hash) {
-        const hashText: string = sheetUrlObj.hash.slice(1);
-        const gidFromHash: string | null = new URLSearchParams(hashText).get("gid");
-        if (gidFromHash) {
-            gid = Number(gidFromHash);
-        }
+    const queryGid = sheetUrlObj.searchParams.get("gid");
+    let rawGid: string | null = queryGid;
+    if (rawGid === null && sheetUrlObj.hash) {
+        const hashParams = new URLSearchParams(sheetUrlObj.hash.slice(1));
+        rawGid = hashParams.get("gid");
     }
-    // gidが見つからなかった場合エラー
+
+    if (rawGid === null) {
+        throw new Error("gidを取得できませんでした");
+    }
+
+    const gid = Number(rawGid);
     if (!Number.isInteger(gid) || gid < 0) {
-        throw new Error("gidを取得できませんでした。");
+        throw new Error("gidを取得できませんでした");
     }
-    return gid as number;
+
+    return gid;
 }
 

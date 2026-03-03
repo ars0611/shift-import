@@ -1,22 +1,33 @@
 import { BatchGetResponse, SpreadsheetMetaResponse } from "@/types/sheet";
 
+type getValuesProps = {
+    accessToken: string,
+    spreadsheetId: string,
+    title: string,
+    ranges: string[]
+}
+
 /**
- * sheets API（values:batchGet）で複数レンジ取得し、レンジ順に配列を結合して二次元配列を返す
- * ただし、レンジ一つ一つは1列に限る（例: A8:A35）
+ * sheets API（values:batchGet）で複数レンジのセル値を取得する
  * @param accessToken OAuthアクセストークン
  * @param spreadsheetId 対象のスプレッドシートID
  * @param title シート名（例: `2026年1月`）
  * @param ranges レンジの配列（例: `["A8:A35", "Z8:Z35", "AA8:AA35"]`）
- * @returns 二次元配列（例: `[[A8:A35の各セルの値], [Z8:Z35の各セルの値], [AA8:AA35の各セルの値]]`）
+ * @returns json
+ * @remarks レンジ1つ1つは1列に限る（例: A8:A35）
  * @throws API呼び出し失敗時のエラー
+ * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchGet?hl=ja
  */
-export async function getValues(accessToken: string, spreadsheetId: string, title: string, ranges: string[]) {
-    const encodedSpreadsheetId: string = encodeURIComponent(spreadsheetId);
+export async function fetchValues({ accessToken, spreadsheetId, title, ranges }: getValuesProps): Promise<BatchGetResponse> {
+    // リクエスト用のURLを組み立てる
+    const encodedSpreadsheetId = encodeURIComponent(spreadsheetId);
     const url = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${encodedSpreadsheetId}/values:batchGet`);
     for (const range of ranges) {
         url.searchParams.append("ranges", `${title}!${range}`);
     }
     url.searchParams.set("majorDimension", "COLUMNS");
+
+    // sheets APIでbatchGetを実行
     const res = await fetch(url, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -28,21 +39,29 @@ export async function getValues(accessToken: string, spreadsheetId: string, titl
         throw new Error(`スプレッドシートの読み込みに失敗しました: ${res.status} ${text}`);
     }
 
-    const data: BatchGetResponse = await res.json();
-    const cols = data.valueRanges.map(v => v.values ?? []);
-    return cols;
+    const data = await res.json();
+    return data;
+}
+
+type getTitlesBySpreadsheetIdProps = {
+    accessToken: string,
+    spreadsheetId: string
 }
 
 /**
- * スプレッドシートIDとシートIDからシート名を取得する
+ * sheets API(field mask)でスプレッドシートIDとシートIDからシート名とgidのペアを取得する
  * @param accessToken OAuthアクセストークン
  * @param spreadsheetId 対象のスプレッドシートID
- * @param gid gid（sheetId）
- * @returns シート名
+ * @returns json
+ * @throws リクエスト失敗時にエラー
+ * @see https://developers.google.com/workspace/sheets/api/guides/field-masks?hl=ja
  */
-export async function getTitle(accessToken: string, spreadsheetId: string, gid: number): Promise<string> {
-    const encodedSpreadsheetId: string = encodeURIComponent(spreadsheetId);
+export async function fetchTitlesAndSpreadsheetId({ accessToken, spreadsheetId }: getTitlesBySpreadsheetIdProps): Promise<SpreadsheetMetaResponse> {
+    // リクエスト用のURLを組み立てる
+    const encodedSpreadsheetId = encodeURIComponent(spreadsheetId);
     const url: URL = new URL(`https://sheets.googleapis.com/v4/spreadsheets/${encodedSpreadsheetId}?fields=sheets.properties(sheetId,title)`)
+
+    // sheets APIでフィールドマスクを利用した読み取り
     const res = await fetch(url, {
         headers: {
             Authorization: `Bearer ${accessToken}`
@@ -55,12 +74,5 @@ export async function getTitle(accessToken: string, spreadsheetId: string, gid: 
     }
 
     const data: SpreadsheetMetaResponse = await res.json();
-    const hit = (data.sheets ?? []).find(
-        sheet => sheet.properties?.sheetId === gid && typeof sheet.properties.title === "string"
-    );
-
-    if (!hit?.properties?.title) {
-        throw new Error(`gid=${gid} に一致するシートタイトルが見つかりませんでした`);
-    }
-    return hit.properties.title;
+    return data;
 }
