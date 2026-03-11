@@ -1,4 +1,4 @@
-import { CalendarEventIdSourcePair, CalendarEventItem } from "@/types/calendar";
+import { CalendarEventIdSourcePair, CalendarEventItem, CalendarEventsListResponse } from "@/types/calendar";
 import { Ymd, Ymdhm, YmdhmTuple, YmdTuple } from "@/types/common";
 
 /**  メインのカレンダーに予定作成/削除する*/
@@ -22,10 +22,11 @@ type fetchEventsInRange = {
 }
 
 /**
- * timeMinからtimeMaxの期間の予定を取得する
+ * timeMinからtimeMaxの期間の予定を取得し、idとsourceのペアの配列を返す
  * @param accessToken OAuthアクセストークン
  * @param timeMin :Ymd 取得したい期間のはじめ
  * @param timeMax :Ymd 取得したい期間の終わり
+ * @throws 取得に失敗したら投げる
  * @returns 指定した期間の予定のIdと予定のプロパティの配列を得る
  * @see https://developers.google.com/workspace/calendar/api/v3/reference/events/list?hl=ja
  */
@@ -49,7 +50,8 @@ export async function fetchEventsInRange({ accessToken, timeMin, timeMax }: fetc
         throw new Error(`既存の予定の取得に失敗しました: ${res.status}`);
     }
 
-    const data = await res.json();
+    // idとsourceだけ取り出して返す
+    const data: CalendarEventsListResponse = await res.json();
     return (data.items ?? []).map((item: CalendarEventItem): CalendarEventIdSourcePair => ({
         id: item.id,
         source: item.extendedProperties?.private?.source
@@ -62,11 +64,11 @@ type DeleteEventProps = {
 }
 
 /**
- * 
- * @param accessToken :string OAuthアクセストークン
- * @param calendarId 
+ * 指定のeventIdの予定をカレンダーから削除する
+ * @param accessToken OAuthアクセストークン
  * @param eventId 
- * @returns
+ * @throws 削除失敗時にエラー
+ * @returns `void`
  * @see https://developers.google.com/workspace/calendar/api/v3/reference/events/delete?hl=ja&_gl=1*1a39jwu*_up*MQ..*_ga*MzIyMDE3NDAyLjE3NzI4OTIxMTc.*_ga_SM8HXJ53K2*czE3NzI4OTIxMTYkbzEkZzAkdDE3NzI4OTIxMTYkajYwJGwwJGgw
  */
 export async function deleteEvent({ accessToken, eventId }: DeleteEventProps): Promise<void> {
@@ -99,9 +101,9 @@ type deleteEventsProps = {
 
 /**
  * 複数の予定を削除し、削除件数を返す。
- * @param accsessToken :string
- * @param eventIds :Array<string> 削除したいeventIdの配列
- * @returns :number 削除した予定の件数を返す
+ * @param accsessToken 
+ * @param eventIds 削除したいeventIdの配列
+ * @returns 削除した予定の件数を返す
  */
 export async function deleteEvents({ accessToken, eventIds }: deleteEventsProps): Promise<number> {
     // rateLimit回避のために数件ずつ実行
@@ -121,10 +123,11 @@ type CreateEventProps = {
 
 /**
  * 指定の開始/終了時刻で予定を作成する
- * @param accessToken :string OAuthアクセストークン
- * @param startDateTime :Ymd 予定開始時刻
- * @param endDateTime :Ymd 予定終了時刻
- * @returns 
+ * @param accessToken OAuthアクセストークン
+ * @param startDateTime 予定開始時刻
+ * @param endDateTime 予定終了時刻
+ * @throws 作成失敗時にエラー
+ * @returns `void`
  */
 export async function createEvent({ accessToken, startDateTime, endDateTime }: CreateEventProps): Promise<void> {
     // リクエスト用のプロパティ
@@ -161,9 +164,9 @@ type createEventsProps = {
 
 /**
  * 複数の予定を作成し、作成件数を返す。
- * @param accsessToken :string
- * @param eventTimes :Array<YmdTuple> 作成したい予定の開始/終了時刻の配列
- * @returns :number 作成した予定の件数を返す
+ * @param accsessToken
+ * @param eventTimes 作成したい予定の開始/終了時刻の配列
+ * @returns 作成した予定の件数を返す
  */
 export async function createEvents({ accessToken, eventTimes }: createEventsProps): Promise<number> {
     // rateLimit回避のために数件ずつ実行

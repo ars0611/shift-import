@@ -7,7 +7,7 @@ type GetTitleByGidProps = {
 }
 
 /**
- * type SpreadsheetMetaResponse のjsonを用いてgidからシートタイトルを取得する
+ * `type SpreadsheetMetaResponse`のjsonを用いてgidからシートタイトルを取得する
  * @param sheetJson json
  * @param gid urlから取得したgid
  * @returns gidに一致するシートのタイトル
@@ -29,8 +29,8 @@ export function getTitleByGid({ sheetJson, gid }: GetTitleByGidProps): string {
 /**
  * セルに入力された時刻をhh:mm形式に整形する（24h）
  * @remarks セルの入力値が正しい前提で使用
- * @param cell :string | number セルに入力された時刻
- * @returns `timeLabel`: string セル値の時刻を整形する（例: 10.5 -> 10:30）
+ * @param cell セルに入力された時刻
+ * @returns セル値の時刻を整形する（例: 10.5 -> 10:30）
  */
 export function toTimeLabel(cell: string | number): string {
     // 入力値が空の場合
@@ -64,8 +64,8 @@ export function parseBatchGetResponse(sheetJson: BatchGetResponse): SheetData {
 
 /**
  * batchgetのレスポンスのrangeから月を取得する
- * @param range : string （例: `"'2026年3月'!A8:A35月"`）
- * @returns month : number | null
+ * @param range （例: `"'2026年3月'!A8:A35月"`）
+ * @returns `month` 不正な値であれば`null`
  */
 export function extractMonthFromRange(range: string): number | null {
     const bangIdx = range.indexOf("!");
@@ -83,9 +83,9 @@ export function extractMonthFromRange(range: string): number | null {
 }
 
 /**
- * 
- * @param range 
- * @returns 
+ * batchgetのレスポンスのrangeから年を取得する
+ * @param range （例: `"'2026年3月'!A8:A35月"`）
+ * @returns `year` 不正な値であれば`null`
  */
 export function extractYearFromRange(range: string): number | null {
     const bangIdx = range.indexOf('!');
@@ -101,7 +101,7 @@ export function extractYearFromRange(range: string): number | null {
 /**
  * セルに入力されたmm月dd日から mm, ddを得る
  * @param cell セルに入力されたmm月dd日
- * @returns `[month, day] | null`
+ * @returns `month, day` 不正な値であれば`null`
  */
 export function parseMonthDay(cell: string): { month: number, day: number } | null {
     const monthPos = cell.indexOf("月");
@@ -122,7 +122,7 @@ export function parseMonthDay(cell: string): { month: number, day: number } | nu
 /**
  * batchgetレスポンスから日付列の初日と最終日を得る
  * @param batchGetResponse バリデーション済みのbatchgetレスポンス
- * @return timeMin, timeMax batchgetで得た日付列の初日と最終日
+ * @return `timeMin, timeMax` batchgetで得た日付列の初日と最終日
  */
 export function getTimeMinMaxFromBatchGetResponse(batchGetResponse: BatchGetResponse): { timeMin: Ymd, timeMax: Ymd } {
     // 日付列はvalueRangesの最初の要素の想定

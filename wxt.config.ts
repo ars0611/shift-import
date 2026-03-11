@@ -14,7 +14,7 @@ export default defineConfig({
   manifest: () => ({
     name: "shift-importer",
     version: "0.1.0",
-    permissions: ["identity", "storage", "activeTab", "scripting"],
+    permissions: ["identity", "storage", "activeTab"],
     host_permissions: ["https://www.googleapis.com/*", "https://sheets.googleapis.com/*", "https://docs.google.com/*"],
     oauth2: {
       client_id: import.meta.env.WXT_OAUTH_CLIENT_ID,

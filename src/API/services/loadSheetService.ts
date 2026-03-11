@@ -13,9 +13,9 @@ type fetchValuesProps = {
  * @param spreadsheetId 対象のスプレッドシートID
  * @param title シート名（例: `2026年1月`）
  * @param ranges レンジの配列（例: `["A8:A35", "Z8:Z35", "AA8:AA35"]`）
+ * @throws API呼び出し失敗時のエラー
  * @returns json
  * @remarks レンジ1つ1つは1列に限る（例: A8:A35）
- * @throws API呼び出し失敗時のエラー
  * @see https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchGet?hl=ja
  */
 export async function fetchValues({ accessToken, spreadsheetId, title, ranges }: fetchValuesProps): Promise<BatchGetResponse> {
@@ -52,8 +52,8 @@ type fetchTitlesAndSpreadsheetIdProps = {
  * sheets API(field mask)でスプレッドシートIDとシートIDからシート名とgidのペアを取得する
  * @param accessToken OAuthアクセストークン
  * @param spreadsheetId 対象のスプレッドシートID
- * @returns json
  * @throws リクエスト失敗時にエラー
+ * @returns json
  * @see https://developers.google.com/workspace/sheets/api/guides/field-masks?hl=ja
  */
 export async function fetchTitlesAndSpreadsheetId({ accessToken, spreadsheetId }: fetchTitlesAndSpreadsheetIdProps): Promise<SpreadsheetMetaResponse> {

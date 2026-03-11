@@ -1,14 +1,16 @@
-import { useState } from 'react';
-import { AccountLinkSection } from '@/components/sections/accountLinkSection';
-import { LoadSheetSection } from '@/components/sections/loadSheetSection';
-import type { SheetData } from '@/types/sheet';
+import { TotalWageSection } from '@/ui/sections/totalWageSection';
+import { AccountLinkSection } from '@/ui/sections/accountLinkSection';
+import { LoadSheetSection } from '@/ui/sections/loadSheetSection';
+import { SettingSection } from '@/ui/sections/settingSection';
 import './App.css';
 
 export default function App() {
   return (
-    <div className="p-2">
+    <div className="h-full overflow-y-auto p-2">
       <AccountLinkSection />
       <LoadSheetSection />
+      <SettingSection />
+      <TotalWageSection />
     </div>
   );
 }

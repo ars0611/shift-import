@@ -17,8 +17,8 @@ type validationResult = {
 
 /**
  * 半角英数字以外が文字列中に混ざってないかを判定する
- * @param str string 判定対象の文字列
- * @returns boolean 半角英数字以外が混じってたらfalse, 混じってないならtrue
+ * @param str 判定対象の文字列
+ * @returns 半角英数字以外が混じってたらfalse, 混じってないならtrue
  */
 function isAlphanumeric(str: string | null): boolean {
     if (!str) { return false }
@@ -27,8 +27,8 @@ function isAlphanumeric(str: string | null): boolean {
 
 /**
  * 文字がアルファベットがどうか判定する
- * @param ch string 判定対象の文字
- * @returns boolean アルファベットならtrue, そうでないならfalse
+ * @param ch 判定対象の文字
+ * @returns アルファベットならtrue, そうでないならfalse
  */
 function isAlphabet(ch: string | null): boolean {
     if (!ch) { return false; }
@@ -37,8 +37,8 @@ function isAlphabet(ch: string | null): boolean {
 
 /**
  * 文字列が数字かどうか判定する
- * @param str string 判定対象の文字列
- * @returns boolen 数字ならtrue, そうでないならfalse
+ * @param str 判定対象の文字列
+ * @returns 数字ならtrue, そうでないならfalse
  */
 function isNumber(str: string | null) {
     if (str === null) { return false; }
@@ -47,8 +47,8 @@ function isNumber(str: string | null) {
 
 /**
  * 各セル指定について有効な書式になっているか判定する
- * @param str string 判定対象のセル
- * @returns boolean 無効なセル指定ならfalse、有効ならtrue
+ * @param str 判定対象のセル
+ * @returns 無効なセル指定ならfalse、有効ならtrue
  */
 function checkCell(input: string | null): boolean {
     // 半角英数字以外が混じった入力値は無効
@@ -68,11 +68,12 @@ function checkCell(input: string | null): boolean {
 
 /**
  * セル指定の入力値から列指定と行指定を得る
+ * @param input 取得対象のセル指定入力値（有効値）
+ * @returns [列指定のアルファベット 行指定の数字]
  * @remarks 引数はcheckCellで有効であることが保証されていることを前提とする
- * @param input stirng 取得対象のセル指定入力値（有効値）
- * @returns `[col, raw]: [string, number]` [列指定のアルファベット 行指定の数字]
  */
 function getColAndRow(input: string): [string, number] {
+    // 前半のアルファベットと後半の数字を前から走査して分割する
     let i = 0;
     while (i < input.length && (isAlphabet(input[i]))) { i++; }
     const col = input.slice(0, i);
@@ -82,21 +83,15 @@ function getColAndRow(input: string): [string, number] {
 
 /**
  * ユーザーのセル指定入力値についてバリデーションをする
- * @param dateStart:string 日付セル開始位置
- * @param dateEnd :string 日付セル終了位置
- * @param clockInStart :string 出勤セル開始位置
- * @param clockInEnd :string 出勤セル終了位置
- * @param clockOutStart :string 退勤セル開始位置
- * @param clockOutEnd :string 退勤セル終了位置
- * @returns `{ok, error}`: validationResult バリデーションの結果
+ * @param dateStart 日付セル開始位置
+ * @param dateEnd 日付セル終了位置
+ * @param clockInStart 出勤セル開始位置
+ * @param clockInEnd 出勤セル終了位置
+ * @param clockOutStart 退勤セル開始位置
+ * @param clockOutEnd 退勤セル終了位置
+ * @returns バリデーションの結果
 */
-export function validateSheetRangeForm({
-    dateStart,
-    dateEnd,
-    clockInStart,
-    clockInEnd,
-    clockOutStart,
-    clockOutEnd }: validateSheetRangeFormProps): validationResult {
+export function validateSheetRangeForm({ dateStart, dateEnd, clockInStart, clockInEnd, clockOutStart, clockOutEnd }: validateSheetRangeFormProps): validationResult {
     // 未入力チェック
     if (!dateStart || !dateEnd || !clockInStart || !clockInEnd || !clockOutStart || !clockOutEnd) {
         return { ok: false, error: "入力値が不足しています。" };
@@ -146,7 +141,7 @@ export function validateSheetRangeForm({
 /**
  * backgroud.ts側で行うセル範囲指定のバリデーション
  * @param ranges backgroudで受け取ったセル範囲指定 (例: `["A8:A38", "Z8:Z38", "AA8:AA38"]`)
- * @returns `validationResult` バリデーション結果
+ * @returns バリデーション結果
  */
 export function validateRangesForBatchGet(ranges: BatchGetRanges): validationResult {
     if (ranges.length !== 3) {
@@ -160,8 +155,8 @@ export function validateRangesForBatchGet(ranges: BatchGetRanges): validationRes
 
 /**
  * batchgetで得たレスポンスに対するバリデーション
- * @param response :BatchGetResponse batchgetのレスポンス
- * @returns `validationResult` バリデーション結果
+ * @param response batchgetのレスポンス
+ * @returns バリデーション結果
  */
 export function validateBatchGetResponse(response: BatchGetResponse): validationResult {
     // 日付、出勤、退勤の3つのセル値が必要
@@ -210,7 +205,7 @@ export function validateBatchGetResponse(response: BatchGetResponse): validation
         if (v === null || v === '') { continue; }
         const vNum = Number(v);
         if (Number.isNaN(vNum) || vNum < 0 || 24 <= vNum) {
-            return { ok: false, error: `出勤時刻が不正です: ${v}` };
+            return { ok: false, error: `退勤時刻が不正です: ${v}` };
         }
     }
 

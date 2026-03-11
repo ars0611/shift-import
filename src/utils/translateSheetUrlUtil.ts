@@ -1,12 +1,12 @@
 /**
  * スプレッドシートのURLからspreadsheetIdを取得する
- * @remarks URL例: `https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit?gid={gid#gid={gid}`
  * @param sheetUrl スプレッドシートのURL
  * @returns spreadsheetId
+ * @remarks URL例: `https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit?gid={gid}#gid={gid}`
  */
 export function getSpreadsheetId(sheetUrl: string): string {
     const sheetUrlObj = new URL(sheetUrl);
-    /** @return [spreadsheets, d, {spreadSheetId}, ...]: string[] */
+    /** @returns [spreadsheets, d, {spreadsheetId}, ...] */
     const parts = sheetUrlObj.pathname.split('/');
     const dIndex = parts.indexOf('d');
 
@@ -25,8 +25,7 @@ export function getSpreadsheetId(sheetUrl: string): string {
 
 /**
  * スプレッドシートのURLからgidを取得する
- * @remarks 
- * @param sheetUrl スプレッドシートを開いてるときのURL
+ * @param sheetUrl スプレッドシートを開いているときのURL
  * @returns gid（sheetId）
  */
 export function getGid(sheetUrl: string): number {

@@ -1,3 +1,4 @@
+/** batchgetした際のレスポンス */
 export type BatchGetResponse = {
     spreadSheetId: string,
     valueRanges: Array<{
@@ -7,6 +8,7 @@ export type BatchGetResponse = {
     }>
 };
 
+/** field maskでgetした際のレスポンス */
 export type SpreadsheetMetaResponse = {
     sheets?: Array<{
         properties?: {
@@ -16,7 +18,9 @@ export type SpreadsheetMetaResponse = {
     }>;
 };
 
+/** batchgetで得たセル値をrangeごとに配列化したもの */
 export type SheetData = Array<Array<string | number>>;
 
-export type BatchGetRanges = string[]
+/**フォームで指定したセル範囲の配列 */
+export type BatchGetRanges = Array<string>
 

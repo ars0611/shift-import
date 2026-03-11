@@ -1,7 +1,8 @@
-type ClickHandler = () => unknown | Promise<unknown>;
+import { ReactNode } from "react";
+import { ClickHandler } from "@/types/common";
 
 type TriggerButtonProps = {
-    label: string,
+    label: ReactNode,
     type?: "button" | "submit",
     onClickFunc?: ClickHandler,
     disabled?: boolean
@@ -9,8 +10,10 @@ type TriggerButtonProps = {
 
 /**
  * 実行ボタンを表示する
- * @param label ボタンに表示するテキスト
+ * @param label ボタンに表示するテキストまたは要素
+ * @param type buttonの属性
  * @param onClickFunc ボタンクリック時に呼ばれる処理
+ * @param disabled buttonの属性
  * @returns 実行用のボタンUI
  */
 export function TriggerButton({ label, type, onClickFunc, disabled }: TriggerButtonProps) {
@@ -24,22 +27,26 @@ export function TriggerButton({ label, type, onClickFunc, disabled }: TriggerBut
             {label}
         </button>
     )
+
 }
 type CancelButtonProps = {
     onClickFunc: ClickHandler
+    label?: string
 }
+
 /**
  * キャンセルボタンを表示する
  * @param onClickFunc クリック時に呼ばれる処理
+ * @param label ボタンに表示する文字。基本キャンセル
  * @returns キャンセルのボタンUI
  */
-export function CancelButton({ onClickFunc }: CancelButtonProps) {
+export function CancelButton({ onClickFunc, label = "キャンセル" }: CancelButtonProps) {
     return (
         <button
             className="rounded-lg border px-4 py-2 text-sm hover:bg-gray-50 hover:cursor-pointer"
             onClick={onClickFunc}
         >
-            キャンセル
+            {label}
         </button>
     )
 }

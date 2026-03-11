@@ -6,9 +6,9 @@ type ModalWrapperProps = {
 
 /**
  * モーダル風にpropsのUIを表示する
- * @remark 画面左に寄って表示される（popupと重なるのを防ぐため）
  * @param children 
- * @returns 
+ * @returns
+ * @remarks 画面左に寄って表示される（popupと重なるのを防ぐため）
  */
 export function ModalWrapper({ children }: ModalWrapperProps) {
     return (
@@ -37,7 +37,7 @@ export function FormWrapper({ formId, actionFunc, children }: FormWrapperProps) 
             <p className="my-1 text-sm text-red-700">
                 ※すべて必須です。
             </p>
-            <form id={formId} action={actionFunc}>
+            <form id={formId} action={actionFunc} autoComplete="on">
                 {children}
             </form>
         </>
