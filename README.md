@@ -1,5 +1,5 @@
 ﻿# Shift Importer
-
+使いたい人は[こちら](https://github.com/ars0611/shift-import/releases/tag/ZIP)を参照。ストアの審査が通るまで、OAuth認証使うためにテストユーザーにGoogleアカウントのメールアドレスを追加する必要があるので、連絡ください。
 > この README は Codex の支援で作成・編集しています。実装コードは作者本人が作成しています。
 
 Google スプレッドシートのシフト表を Google カレンダーへ取り込む Chrome 拡張です。  
