@@ -106,13 +106,19 @@ type deleteEventsProps = {
  * @returns 削除した予定の件数を返す
  */
 export async function deleteEvents({ accessToken, eventIds }: deleteEventsProps): Promise<number> {
+    let successCount = 0;
     // rateLimit回避のために数件ずつ実行
     for (let i = 0; i < eventIds.length; i += 4) {
         const chunk = eventIds.slice(i, i + 4);
-        await Promise.all(chunk.map((eventId) => deleteEvent({ accessToken, eventId })))
+        const results = await Promise.allSettled(chunk.map((eventId) => deleteEvent({ accessToken, eventId })));
+        results.map((result) => {
+            if (result.status === "fulfilled") {
+                successCount += 1;
+            }
+        })
     }
 
-    return eventIds.length
+    return successCount;
 }
 
 type CreateEventProps = {
@@ -169,11 +175,17 @@ type createEventsProps = {
  * @returns 作成した予定の件数を返す
  */
 export async function createEvents({ accessToken, eventTimes }: createEventsProps): Promise<number> {
+    let successCount = 0;
     // rateLimit回避のために数件ずつ実行
     for (let i = 0; i < eventTimes.length; i += 4) {
         const chunk = eventTimes.slice(i, i + 4);
-        await Promise.all(chunk.map((eventTime) => createEvent({ accessToken, startDateTime: eventTime[0], endDateTime: eventTime[1] })))
+        const results = await Promise.allSettled(chunk.map((eventTime) => createEvent({ accessToken, startDateTime: eventTime[0], endDateTime: eventTime[1] })))
+        results.map((result) => {
+            if (result.status === "fulfilled") {
+                successCount += 1
+            }
+        })
     }
 
-    return eventTimes.length;
+    return successCount;
 }
